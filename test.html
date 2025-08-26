@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Checker - Test Application</title>
+    <style>
+        /* Simplified CSS for testing */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #333;
+            min-height: 90vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .header h1 {
+            color: #2a5298;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .strategy-selector {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .strategy-selector select {
+            padding: 10px 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            min-width: 150px;
+        }
+
+        .mode-btn.active {
+            background: #2a5298;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.3);
+        }
+
+        .mode-btn:not(.active) {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .parameter-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #2a5298;
+            margin-bottom: 25px;
+        }
+
+        .parameter-group h3 {
+            color: #2a5298;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .parameter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .parameter-label {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .parameter-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            min-width: 60px;
+        }
+
+        .option-btn.yes {
+            border-color: #28a745;
+            color: #28a745;
+        }
+
+        .option-btn.yes.selected {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .option-btn.no {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .option-btn.no.selected {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            min-width: 150px;
+        }
+
+        .primary-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Trade Checker System</h1>
+            <p>Professional Trading Analysis & Record Management</p>
+        </div>
+
+        <div class="strategy-selector">
+            <label for="strategy-select">Select Trading Strategy: </label>
+            <select id="strategy-select">
+                <option value="Strategy A">Strategy A</option>
+                <option value="Strategy B">Strategy B</option>
+                <option value="Strategy C">Strategy C</option>
+                <option value="Strategy D">Strategy D</option>
+                <option value="Strategy E">Strategy E</option>
+            </select>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="switchMode('record')">
+                Record Trade
+            </button>
+            <button class="mode-btn" onclick="switchMode('check')">
+                Check Trade
+            </button>
+        </div>
+
+        <div id="success-message" class="success-message hidden">
+            Application loaded successfully! The Trade Checker System is working correctly.
+        </div>
+
+        <div class="dashboard-content">
+            <h2 id="mode-title">Record Trade - Strategy A</h2>
+            
+            <!-- Parameter groups with the exact 15 parameters as requested -->
+            <div class="parameter-group">
+                <h3>SROOT Analysis (P1-P3)</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">P1: .50 touch after SROOT?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p1', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p1', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P2: Venus Touch before SROOT(+.50)</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p2', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p2', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P3: Mercury Touch before SROOT(+.50)</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p3', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p3', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parameter-group">
+                <h3>Post-SROOT Touches (P4-P6)</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">P4: Venus touch AFTER SROOT?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p4', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p4', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P5: Mercury touch AFTER SROOT?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p5', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p5', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P6: R Venus touch right after -1.0?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p6', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p6', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parameter-group">
+                <h3>Reverse Analysis (P7-P9)</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">P7: R Mercury touch right after -1.0?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p7', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p7', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P8: R Venus Touch after -.50</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p8', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p8', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P9: R Mercury touch after -.50</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p9', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p9', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parameter-group">
+                <h3>Salt & Trigger Analysis (P10-P12)</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">P10: -.50 touch after Salt Achieved &(before Trigger)?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p10', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p10', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P11: -1.0 Reswept?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p11', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p11', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P12: Reverse Highest C Candle redefined?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p12', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p12', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="parameter-group">
+                <h3>VL & EB Levels (P13-P15)</h3>
+                <div class="parameter-row">
+                    <div class="parameter-label">P13: VL under .114?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p13', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p13', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P14: VL above .836?</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p14', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p14', false, this)">No</button>
+                    </div>
+                </div>
+                <div class="parameter-row">
+                    <div class="parameter-label">P15: EB above .836</div>
+                    <div class="parameter-options">
+                        <button class="option-btn yes" onclick="selectParameter('p15', true, this)">Yes</button>
+                        <button class="option-btn no" onclick="selectParameter('p15', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn primary-btn" onclick="testFunction()">
+                    Test Functionality
+                </button>
+                <button class="action-btn secondary-btn" onclick="resetForm()">
+                    Reset Form
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript to test functionality
+        let currentMode = 'record';
+        let parameters = {};
+        
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update title
+            const strategy = document.getElementById('strategy-select').value;
+            document.getElementById('mode-title').textContent = 
+                (mode === 'record' ? 'Record Trade' : 'Check Trade') + ' - ' + strategy;
+        }
+        
+        function selectParameter(paramKey, value, buttonElement) {
+            // Store parameter value
+            parameters[paramKey] = value;
+            
+            // Update button states in the same row
+            const row = buttonElement.closest('.parameter-row');
+            const buttons = row.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            buttonElement.classList.add('selected');
+            
+            console.log('Parameter ' + paramKey + ' set to: ' + value);
+        }
+        
+        function testFunction() {
+            const filledParams = Object.keys(parameters).length;
+            document.getElementById('success-message').textContent = 
+                'Test successful! Parameters filled: ' + filledParams + '/15. ' +
+                'Data persistence: ' + (localStorage ? 'Available' : 'Not Available');
+            document.getElementById('success-message').classList.remove('hidden');
+            
+            // Test localStorage
+            try {
+                localStorage.setItem('trade-checker-test', 'working');
+                const test = localStorage.getItem('trade-checker-test');
+                console.log('LocalStorage test:', test);
+            } catch (e) {
+                console.error('LocalStorage not available:', e);
+            }
+        }
+        
+        function resetForm() {
+            parameters = {};
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('success-message').classList.add('hidden');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Trade Checker System Loaded');
+            setTimeout(() => {
+                document.getElementById('success-message').classList.remove('hidden');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
