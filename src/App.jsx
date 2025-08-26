@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import RecordTrade from './components/RecordTrade';
 import CheckTrade from './components/CheckTrade';
+import HistoricalData from './components/HistoricalData';
 import './index.css';
 
 function App() {
   const [selectedStrategy, setSelectedStrategy] = useState('Strategy A');
-  const [mode, setMode] = useState('record'); // 'record' or 'check'
+  const [mode, setMode] = useState('record'); // 'record', 'check', or 'historical'
 
   const strategies = [
     'Strategy A',
@@ -50,13 +51,21 @@ function App() {
         >
           Check Trade
         </button>
+        <button
+          className={`mode-btn ${mode === 'historical' ? 'active' : ''}`}
+          onClick={() => setMode('historical')}
+        >
+          Historical Data
+        </button>
       </div>
 
       <div className="dashboard-content">
         {mode === 'record' ? (
           <RecordTrade strategy={selectedStrategy} />
-        ) : (
+        ) : mode === 'check' ? (
           <CheckTrade strategy={selectedStrategy} />
+        ) : (
+          <HistoricalData strategy={selectedStrategy} />
         )}
       </div>
     </div>

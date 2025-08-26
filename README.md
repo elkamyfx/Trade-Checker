@@ -7,6 +7,7 @@ A professional trading analysis and record management application designed for t
 ### Two Main Modes:
 - **Record Trade**: Document trading scenarios with 15 parameters, results, and comments
 - **Check Trade**: Analyze historical patterns by matching current parameters against recorded data
+- **Historical Data**: View all recorded trades grouped by parameter combinations with recurrence analysis
 
 ### Key Capabilities:
 - ✅ **15 Parameter Analysis**: Comprehensive trading parameter tracking grouped logically
@@ -17,6 +18,9 @@ A professional trading analysis and record management application designed for t
 - ✅ **Strategy Management**: Support for multiple trading strategies
 - ✅ **Color-Coded Interface**: Green for "Yes", Red for "No" selections
 - ✅ **Responsive Design**: Optimized layout that doesn't require scrolling
+- ✅ **Historical Data View**: Comprehensive analysis of all recorded trades
+- ✅ **Grouped Recurrences**: View identical parameter combinations and their frequency
+- ✅ **Export Functionality**: Download historical data as JSON for backup
 
 ## 📊 Trading Parameters
 

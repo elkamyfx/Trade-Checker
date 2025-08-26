@@ -174,6 +174,121 @@ class DatabaseService {
       return { success: false, error: error.message };
     }
   }
+
+  // Get historical data grouped by parameter combinations
+  getHistoricalDataGrouped(strategy = null) {
+    try {
+      const allTrades = this.getAllTrades();
+      const filteredTrades = strategy ? 
+        allTrades.filter(trade => trade.strategy === strategy) : 
+        allTrades;
+
+      // Group trades by parameter combinations
+      const grouped = {};
+      
+      filteredTrades.forEach(trade => {
+        // Create a unique key for the parameter combination
+        const paramKey = this.createParameterKey(trade.parameters);
+        
+        if (!grouped[paramKey]) {
+          grouped[paramKey] = {
+            parameters: trade.parameters,
+            strategy: trade.strategy,
+            trades: [],
+            totalOccurrences: 0,
+            results: {},
+            firstSeen: trade.date,
+            lastSeen: trade.date
+          };
+        }
+        
+        grouped[paramKey].trades.push(trade);
+        grouped[paramKey].totalOccurrences++;
+        
+        // Count results
+        if (!grouped[paramKey].results[trade.result]) {
+          grouped[paramKey].results[trade.result] = 0;
+        }
+        grouped[paramKey].results[trade.result]++;
+        
+        // Update date range
+        if (new Date(trade.timestamp) < new Date(grouped[paramKey].firstSeen)) {
+          grouped[paramKey].firstSeen = trade.date;
+        }
+        if (new Date(trade.timestamp) > new Date(grouped[paramKey].lastSeen)) {
+          grouped[paramKey].lastSeen = trade.date;
+        }
+      });
+
+      // Convert to array and sort by total occurrences (most frequent first)
+      const groupedArray = Object.values(grouped)
+        .sort((a, b) => b.totalOccurrences - a.totalOccurrences);
+
+      return { success: true, data: groupedArray };
+    } catch (error) {
+      console.error('Error getting historical data:', error);
+      return { success: false, error: error.message, data: [] };
+    }
+  }
+
+  // Create a unique key for parameter combination
+  createParameterKey(parameters) {
+    const keys = [
+      'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 
+      'p9', 'p10', 'p11', 'p12', 'p13', 'p14', 'p15'
+    ];
+    
+    return keys.map(key => `${key}:${parameters[key]}`).join('|');
+  }
+
+  // Get summary statistics
+  getStatistics(strategy = null) {
+    try {
+      const allTrades = this.getAllTrades();
+      const filteredTrades = strategy ? 
+        allTrades.filter(trade => trade.strategy === strategy) : 
+        allTrades;
+
+      const stats = {
+        totalTrades: filteredTrades.length,
+        strategies: [...new Set(allTrades.map(trade => trade.strategy))],
+        results: {},
+        uniqueParameterCombinations: 0,
+        dateRange: {
+          first: null,
+          last: null
+        }
+      };
+
+      // Count results
+      filteredTrades.forEach(trade => {
+        if (!stats.results[trade.result]) {
+          stats.results[trade.result] = 0;
+        }
+        stats.results[trade.result]++;
+        
+        // Update date range
+        if (!stats.dateRange.first || new Date(trade.timestamp) < new Date(stats.dateRange.first)) {
+          stats.dateRange.first = trade.date;
+        }
+        if (!stats.dateRange.last || new Date(trade.timestamp) > new Date(stats.dateRange.last)) {
+          stats.dateRange.last = trade.date;
+        }
+      });
+
+      // Count unique parameter combinations
+      const uniqueParams = new Set();
+      filteredTrades.forEach(trade => {
+        uniqueParams.add(this.createParameterKey(trade.parameters));
+      });
+      stats.uniqueParameterCombinations = uniqueParams.size;
+
+      return { success: true, data: stats };
+    } catch (error) {
+      console.error('Error getting statistics:', error);
+      return { success: false, error: error.message, data: null };
+    }
+  }
 }
 
 // Create singleton instance
